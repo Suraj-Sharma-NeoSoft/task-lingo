@@ -34,9 +34,9 @@ export async function POST(req: Request) {
       }
       
       return Response.json({ translatedText });
-    } catch (err: any) {
-      console.error("Groq translation error:", err);
-      return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
-    }
+    } catch (err) {
+        console.error("Groq translation error:", (err as Error).message);
+        return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
+    }      
   }
   
