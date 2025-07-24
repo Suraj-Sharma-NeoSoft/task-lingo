@@ -61,7 +61,6 @@ _A multilingual AI-powered task management application._
 task-lingo/
 ├── lib/
 │   └── supabaseClient.ts
-├── public/
 ├── src/
 │   └── app/
 │       ├── api/
@@ -69,7 +68,6 @@ task-lingo/
 │       │       └── route.ts
 │       ├── auth/
 │       │   └── page.tsx
-│       ├── favicon.ico
 │       ├── globals.css
 │       ├── layout.tsx
 │       └── page.tsx
