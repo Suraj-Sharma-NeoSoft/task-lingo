@@ -1,14 +1,20 @@
-"use client";
+"use client"; // This directive tells Next.js this component runs on the client side
 
+// React hooks
 import { useEffect, useState } from "react";
+// Supabase client setup
 import { supabase } from "../../lib/supabaseClient";
+// Authentication UI components
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
+// Routing utility from Next.js
 import { useRouter } from "next/navigation";
+// Supabase User type
 import { User } from "@supabase/supabase-js";
+// Toast notifications for feedback
 import toast, { Toaster } from "react-hot-toast";
 
-// Types
+// Type definition for a Todo item
 type Todo = {
   id: string;
   task: string;
@@ -18,40 +24,46 @@ type Todo = {
 };
 
 export default function HomePage() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [input, setInput] = useState("");
-  const [user, setUser] = useState<User | null>(null);
-  const [language, setLanguage] = useState("es");
-  const [loading, setLoading] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState("");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  const [showProfile, setShowProfile] = useState(false);
+  // ---------- State Variables ----------
+  const [todos, setTodos] = useState<Todo[]>([]); // All fetched tasks
+  const [input, setInput] = useState(""); // Input value for new task
+  const [user, setUser] = useState<User | null>(null); // Authenticated user
+  const [language, setLanguage] = useState("es"); // Target translation language
+  const [loading, setLoading] = useState(false); // Button loader state
+  const [editingId, setEditingId] = useState<string | null>(null); // ID of todo being edited
+  const [editValue, setEditValue] = useState(""); // Updated value of the task
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null); // Confirm box for delete
+  const [showProfile, setShowProfile] = useState(false); // Show profile modal
+
   const router = useRouter();
 
+  // ---------- Auth & Session Listener ----------
   useEffect(() => {
     const getUser = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      setUser(user);
+      setUser(user); // Set current user
     };
 
     getUser();
 
+    // Listen for auth changes
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
     });
 
     return () => {
-      listener?.subscription.unsubscribe();
+      listener?.subscription.unsubscribe(); // Cleanup on unmount
     };
   }, []);
 
+  // Fetch todos only when user is set
   useEffect(() => {
     if (user) fetchTodos();
   }, [user]);
 
+  // ---------- Fetch Todos for Current User ----------
   const fetchTodos = async () => {
     const { data, error } = await supabase
       .from("todos")
@@ -63,6 +75,7 @@ export default function HomePage() {
     else setTodos(data || []);
   };
 
+  // ---------- Add New Todo ----------
   const addTodo = async () => {
     if (!input.trim()) return;
 
@@ -79,6 +92,7 @@ export default function HomePage() {
     error ? toast.error("Failed to add task") : toast.success("Task added");
   };
 
+  // ---------- Toggle Completion Status ----------
   const toggleComplete = async (todo: Todo) => {
     const { error } = await supabase
       .from("todos")
@@ -89,6 +103,7 @@ export default function HomePage() {
     await fetchTodos();
   };
 
+  // ---------- Delete Todo ----------
   const deleteTodo = async (id: string) => {
     const { error } = await supabase.from("todos").delete().eq("id", id);
     error ? toast.error("Delete failed") : toast.success("Task deleted");
@@ -96,6 +111,7 @@ export default function HomePage() {
     await fetchTodos();
   };
 
+  // ---------- Update Todo Text ----------
   const updateTodo = async () => {
     if (!editingId || !editValue.trim()) return;
 
@@ -114,6 +130,7 @@ export default function HomePage() {
     }
   };
 
+  // ---------- Translate Todo Task ----------
   const handleTranslate = async (todo: Todo) => {
     try {
       const res = await fetch("/api/translate", {
@@ -136,29 +153,35 @@ export default function HomePage() {
     }
   };
 
+  // ---------- Logout Handler ----------
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
     setTodos([]);
-    router.refresh();
+    router.refresh(); // Refresh page on logout
   };
 
+  // ---------- Placeholder for Profile Modal ----------
   const handleProfileUpdate = () => {
     toast("Profile editing coming soon...");
     setShowProfile(false);
   };
 
+  // ---------- Auth UI (Login / Signup) ----------
   if (!user) {
     return (
       <div className="flex justify-center mt-20">
         <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} theme="dark" />
       </div>
     );
-  }    
+  }
 
+  // ---------- Main Todo Page UI ----------
   return (
     <main className="max-w-xl mx-auto p-6">
       <Toaster />
+
+      {/* Header & Greeting */}
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-2xl font-bold">Task Lingo</h1>
@@ -180,6 +203,7 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Input for Adding Task */}
       <div className="flex gap-2 mb-4">
         <input
           value={input}
@@ -196,6 +220,7 @@ export default function HomePage() {
         </button>
       </div>
 
+      {/* Language Selection Dropdown */}
       <div className="mb-4">
         <label className="text-sm text-gray-700">Translate to: </label>
         <select
@@ -211,12 +236,14 @@ export default function HomePage() {
         </select>
       </div>
 
+      {/* Todo List */}
       <ul className="space-y-3">
         {todos.map((todo) => (
           <li
             key={todo.id}
             className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between border p-3 rounded bg-white shadow-sm"
           >
+            {/* Task Display or Edit Field */}
             <div className="flex-1">
               {editingId === todo.id ? (
                 <input
@@ -237,6 +264,7 @@ export default function HomePage() {
               )}
             </div>
 
+            {/* Action Buttons */}
             <div className="flex gap-2">
               <button
                 onClick={() => toggleComplete(todo)}
@@ -267,6 +295,7 @@ export default function HomePage() {
               </button>
             </div>
 
+            {/* Delete Confirmation Prompt */}
             {showDeleteConfirm === todo.id && (
               <div className="text-sm text-gray-700 mt-2">
                 Are you sure?
@@ -282,6 +311,7 @@ export default function HomePage() {
         ))}
       </ul>
 
+      {/* Profile Modal */}
       {showProfile && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow-xl w-96">
