@@ -141,7 +141,7 @@ Make sure your environment variables are added under Vercel project settings.
 
 ## 👤 Author
 
-**Suraj Sharma**
+**Suraj Sharma** <br/>
 Developed during a technical assessment at **NeoSOFT Technologies**.
 
 ---
