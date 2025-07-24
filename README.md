@@ -1,36 +1,153 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Task Lingo 📝🌐  
+_A multilingual AI-powered task management application._
 
-## Getting Started
+---
 
-First, run the development server:
+## 🔗 Live Links
+
+- 🚀 **Live App**: [https://task-lingo-tan.vercel.app/](https://task-lingo-tan.vercel.app/)
+- 💻 **GitHub Repository**: [https://github.com/Suraj-Sharma-NeoSoft/task-lingo](https://github.com/Suraj-Sharma-NeoSoft/task-lingo)
+
+---
+
+## 📌 Project Overview
+
+**Task Lingo** is an AI-powered to-do application built using **Next.js**, **Supabase**, and **Llama 4-based translation (via Groq Cloud)**. It enables users to manage personal task lists with CRUD functionality, while offering the ability to translate tasks into widely-used global languages. The application supports authenticated multi-user access, ensuring data privacy and secure operations.
+
+---
+
+## ✨ Key Features
+
+- **User Authentication**
+  - Secure sign-up, login, and logout via email & password
+  - Email verification support using Supabase's built-in templates
+
+- **Task Management**
+  - Create, read, update, and delete tasks
+  - Mark tasks as complete
+  - Inline task editing with autosave 
+
+- **AI Translation**
+  - Translate tasks to multiple languages using Llama (via Groq Cloud API)
+  - Supported languages: Spanish, French, German, Hindi, Japanese
+
+- **Multi-User Support**
+  - User-specific task visibility using Supabase Row-Level Security (RLS)
+  - Session-based logout handling
+
+- **UI/UX Enhancements**
+  - Toast notifications for user feedback
+  - Responsive design with Tailwind CSS
+  - Profile modal for future user preferences or password reset
+
+---
+
+## 🛠 Tech Stack
+
+| Tool/Service    | Role                                   |
+|-----------------|----------------------------------------|
+| **Next.js**     | Frontend framework with App Router     |
+| **Supabase**    | Auth, Database, RLS, email verification |
+| **TailwindCSS** | Component styling                      |
+| **Groq (LLaMA 4)**| LLM-powered task translation           |
+| **React Hot Toast** | Real-time user feedback            |
+
+---
+
+## 📂 Project Structure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+task-lingo/
+├── lib/
+│   └── supabaseClient.ts
+├── public/
+├── src/
+│   └── app/
+│       ├── api/
+│       │   └── translate/
+│       │       └── route.ts
+│       ├── auth/
+│       │   └── page.tsx
+│       ├── favicon.ico
+│       ├── globals.css
+│       ├── layout.tsx
+│       └── page.tsx
+├── .env.local
+├── .gitignore
+├── LICENSE
+├── README.md
+├── package.json
+├── package-lock.json
+├── next.config.ts
+├── postcss.config.mjs
+├── tailwind.config.ts
+```
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Suraj-Sharma-NeoSoft/task-lingo.git
+cd task-lingo
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file in the root directory:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+GROQ_API_KEY=your_groq_api_key
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🔐 Supabase Configuration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Enable **email authentication** under `Authentication → Sign in / Providers`.
+2. Configure **email templates** for verification under `Authentication → Emails`.
+3. Apply **Row-Level Security (RLS)** on the `todos` table:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sql
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
 
-## Deploy on Vercel
+CREATE POLICY "Users can manage their own todos"
+ON todos FOR ALL
+USING (auth.uid() = user_id);
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Deployment
+
+This app is fully compatible with **Vercel**:
+
+```bash
+vercel --prod
+```
+
+Make sure your environment variables are added under Vercel project settings.
+
+---
+
+## 📷 Screenshot
+
+<img width="960" height="486" alt="image" src="https://github.com/user-attachments/assets/74e315e6-55b1-4c82-ae3d-d3edaeda28dd" />
+
+---
+
+## 👤 Author
+
+**Suraj Sharma**
+Developed during a technical assessment at **NeoSOFT Technologies**.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
